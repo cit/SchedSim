@@ -2,6 +2,7 @@
 
 This Python script provides a real-time visualization of different scheduling algorithms using the `curses` library. It's designed to help understand how various scheduling algorithms (Rate Monotonic Scheduling, Deadline Monotonic Scheduling, Earliest Deadline First, and Least Laxity First) operate under different task configurations. This script was developed for the Operating Systems 1 course that I regularly teach at Hof University of Applied Sciences.
 
+![demo](demo/demo.gif)
 
 ## Features
 

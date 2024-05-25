@@ -10,6 +10,7 @@ from argparse import ArgumentParser
 
 class Scheduler:
     process_id = 0
+    long_name = ''
 
     def __init__(self, name, color, release, execution, deadline, period):
         self.name = name
@@ -66,6 +67,7 @@ class Scheduler:
 
 # Rate Monotonic Scheduling (RMS)
 class Rms(Scheduler):
+    long_name = 'Rate Monotonic Scheduling (RMS)'
 
     def sorting_criteria(self, t):
         return self.period
@@ -73,6 +75,7 @@ class Rms(Scheduler):
 
 # Deadline Monotonic Scheduling (DMS)
 class Dms(Scheduler):
+    long_name = 'Deadline Monotonic Scheduling (DMS)'
 
     def sorting_criteria(self, t):
         return self.deadline
@@ -80,6 +83,7 @@ class Dms(Scheduler):
 
 # Earliest Deadline First (EDF)
 class Edf(Scheduler):
+    long_name = 'Earliest Deadline First (EDF)'
 
     def distance_deadline(self, t):
         return self.current_deadline - t
@@ -90,6 +94,7 @@ class Edf(Scheduler):
 
 # Least Laxity First (LLF)
 class Llf(Scheduler):
+    long_name = 'Least Laxity First (LLF)'
 
     def laxity(self, t):
         return self.current_deadline - self.execution - t
@@ -104,9 +109,7 @@ def prepare_screen(stdscr, args, tasks):
 
     # Title
     stdscr.addstr('Scheduling Algorithm: ')
-    stdscr.addstr(args['algo'])
-
-    curses.start_color()
+    stdscr.addstr(tasks[0].long_name)
 
     curses.init_pair(10, curses.COLOR_WHITE, curses.COLOR_RED)
 

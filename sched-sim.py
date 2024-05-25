@@ -151,14 +151,24 @@ def main(stdscr, args, tasks):
     stdscr.getch()
 
 
+
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument("-r", "--runtime", dest="runtime", type=int, default=25,
-                        help="Runtime defines how long Scheduler to simulate")
-    parser.add_argument("-s", "--sleep", dest="sleep", type=float, default=1,
-                        help="time to sleep during the execution")
-    parser.add_argument("-a", "--algorithm", dest="algo", default='rms',
-                        help="Runtime defines how long Scheduler to simulate")
+    parser.add_argument("-r", "--runtime",
+                        dest="runtime",
+                        type=int,
+                        default=25,
+                        help="Defines how long the Scheduler should simulate.")
+    parser.add_argument("-s", "--sleep",
+                        dest="sleep",
+                        type=float,
+                        default=1,
+                        help="Time in seconds to sleep during the execution.")
+    parser.add_argument("-a", "--algorithm",
+                        dest="algo",
+                        default='rms',
+                        choices=['rms', 'dms', 'edf', 'llf'],
+                        help="Select the scheduling algorithm to use.")
 
     args = vars(parser.parse_args())
 

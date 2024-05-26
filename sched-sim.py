@@ -125,6 +125,25 @@ def prepare_screen(stdscr, args, tasks):
 
             stdscr.attroff(curses.color_pair(10))
 
+    max_y, max_x = stdscr.getmaxyx()
+
+    # Define the start position on the right side
+    start_x = max_x - 30
+    start_y = 0
+
+    stdscr.addstr(start_y, start_x, "Task Information")
+    stdscr.addstr(start_y + 2, start_x, "    r   e   d   p")
+
+    for i, task in enumerate(tasks):
+        stdscr.addstr(start_y + i + 3, start_x,
+                      task.name +
+                      '{:4d}'.format(task.release) +
+                      '{:4d}'.format(task.execution) +
+                      '{:4d}'.format(task.deadline) +
+                      '{:4d}'.format(task.period))
+
+    stdscr.refresh()
+
 
 def main(stdscr, args, tasks):
     prepare_screen(stdscr, args, tasks)

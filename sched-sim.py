@@ -23,22 +23,23 @@ class Scheduler:
 
         # set first period to release
         self.current_period = self.release
-        self.current_deadline = self.deadline
+        self.current_deadline = self.release + self.deadline
 
-        Scheduler.process_id += 2
+        Scheduler.process_id += 3
         self.process_id = Scheduler.process_id - 1
 
     def check_completed(self):
         if self.vruntime == self.execution:
             self.vruntime = 0
             self.current_period += self.period
-            self.current_deadline += self.deadline
+            self.current_deadline = self.current_period + self.deadline
 
     def is_ready(self, t):
         return t >= self.current_period
 
     def deadline_missed(self, t):
-        if (self.current_deadline - self.vruntime - t) < 0:
+        # print(self.current_deadline - self.vruntime - t)
+        if (self.current_deadline - self.vruntime - t) == 0:
             return True
 
         return False
@@ -59,7 +60,7 @@ class Scheduler:
         stdscr.addstr(self.process_id, time, self.name, color)
 
         # Draw the
-        stdscr.addstr(nr_of_tasks*2 + 5, time, self.name, color)
+        stdscr.addstr(nr_of_tasks*3 + 5, time, self.name, color)
 
         # Refresh the screen to see the changes
         stdscr.refresh()
@@ -111,19 +112,22 @@ def prepare_screen(stdscr, args, tasks):
     stdscr.addstr('Scheduling Algorithm: ')
     stdscr.addstr(tasks[0].long_name)
 
-    curses.init_pair(10, curses.COLOR_WHITE, curses.COLOR_RED)
+    red_color = 10
+
+    curses.init_pair(red_color, curses.COLOR_WHITE, curses.COLOR_RED)
 
     # Draw timeline for each task
     for task in tasks:
         for x in range(0, args["runtime"]):
-            if (x % task.deadline) == 0 and x != 0:
-                stdscr.attron(curses.color_pair(10))
-            if (x % 5) == 0:
-                stdscr.addch(task.process_id + 1, x, "|")
-            else:
-                stdscr.addch(task.process_id + 1, x, "-")
+            color = curses.color_pair(0)
+            if ((x - task.release - task.deadline) % task.period) == 0 and x > task.release:
+                color = curses.color_pair(10)
 
-            stdscr.attroff(curses.color_pair(10))
+            if (x % 5) == 0:
+                stdscr.addstr(task.process_id + 1, x, "|", color)
+                stdscr.addstr(task.process_id + 2, x, str(x))
+            else:
+                stdscr.addch(task.process_id + 1, x, "-", color)
 
     max_y, max_x = stdscr.getmaxyx()
 
@@ -161,14 +165,16 @@ def main(stdscr, args, tasks):
         # check if we really have tasks that can be executed
         if sorted_queue:
             sorted_queue[0].draw(stdscr, t, len(tasks))
+            sorted_queue[0].check_completed()
+
             for task in tasks:
                 if task.deadline_missed(t):
                     print(task.name + " missed the deadline at " + str(t))
                     stdscr.getch()
-            sorted_queue[0].check_completed()
+                    if stdscr.getch() == ord('q'):
+                        sys.exit(0)
 
     stdscr.getch()
-
 
 
 if __name__ == '__main__':
@@ -199,7 +205,7 @@ if __name__ == '__main__':
     tasks = [                                    # r  e  d   p
         scheduling_algo("A", curses.COLOR_BLUE,    0, 1, 3, 3),
         scheduling_algo("B", curses.COLOR_MAGENTA, 0, 1, 4, 4),
-        scheduling_algo("C", curses.COLOR_GREEN,   0, 2, 5, 5),
+        scheduling_algo("C", curses.COLOR_GREEN,   1, 2, 5, 5),
     ]
 
     curses.wrapper(main, args, tasks)
